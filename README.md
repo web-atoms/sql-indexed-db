@@ -1,2 +1,38 @@
-# sql-indexed-db
+# Sql-Indexed-Db
 Simple to use Sql interface for IndexedDB
+
+# Why
+Most implementations are buggy and complicated and sql.js requires synchronous file api which is not possible without changing headers on server side. Exposing headers from server side isn't safe without understanding full consequences.
+
+# State
+Development - Not Ready for Production
+
+# Design
+This will contain simple API as shown below.
+
+```javascript
+// there is no way to upgrade database
+// new one will be recreated in case of version mismatch
+const db = await SqlIndexedDb.open("db", /* version */ 2);
+
+const table = await db.createTableIfNotExists("Customers", {
+    customerID: {
+        type: "bigint",
+        generated: "identity"
+    },
+    firstName: {
+        type: "string",
+        max: 50
+    },
+    lastName: {
+       type: "string",
+       max: 50
+    },
+    address: {
+       type: "string",
+       nullable: true
+    }
+});
+
+```
+

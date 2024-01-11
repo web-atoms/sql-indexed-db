@@ -15,7 +15,7 @@ This will contain simple API as shown below.
 // new one will be recreated in case of version mismatch
 const db = await SqlIndexedDb.open("db", /* version */ 2);
 
-const table = await db.createTableIfNotExists("Customers", {
+const customers = await db.table.createTableIfNotExists("Customers", {
     customerID: {
         type: "bigint",
         generated: "identity"
@@ -34,5 +34,33 @@ const table = await db.createTableIfNotExists("Customers", {
     }
 });
 
+await customers.createIndex("IX_Customers_By_Name", {
+    columns: {
+        firstName: "ASC",
+        lastName: "ASC"
+    },
+    filter: (x) => x.firstName || x.lastName
+});
+
+// create
+const c = await customers.insert({
+    firstName: "Akash",
+    lastName: "Kava"
+});
+
+// retrieve
+await customers
+    .where({ id: 5 }, (p) => (x) => x.customerID === p.id)
+    .first();
+
+// delete
+await customers
+    .where({ id: 5 }, (p) => (x) => x.customerID === p.id)
+    .delete();
+
+// update
+await customers
+    .where({ id: 5 }, (p) => (x) => x.customerID === p.id)
+    .update(void 0, (p) => (x) => ({ address: "no where" }));
 ```
 
